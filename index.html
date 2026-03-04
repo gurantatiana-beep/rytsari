@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цифровые Рыцари: Защитники Сети</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --neon-blue: #00d4ff;
+            --neon-purple: #b347d9;
+            --neon-green: #00ff88;
+            --neon-red: #ff3366;
+            --dark-bg: #0a0b1e;
+            --panel-bg: rgba(20, 21, 50, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--dark-bg);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(179, 71, 217, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0b1e 0%, #1a1b3a 100%);
+        }
+
+        /* Анимированная сетка фона */
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Шапка */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--neon-blue);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        header::before {
+            content: '🛡️';
+            position: absolute;
+            left: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        header::after {
+            content: '⚔️';
+            position: absolute;
+            right: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite reverse;
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--neon-green);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        /* Игровая панель */
+        .game-board {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .game-board {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Боковые панели */
+        .side-panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        /* Статистика игрока */
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--neon-blue);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: var(--neon-green);
+        }
+
+        .resources {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .resource-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid;
+            transition: all 0.3s;
+        }
+
+        .resource-icon.shield {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .resource-icon.sword {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 10px rgba(179, 71, 217, 0.3);
+        }
+
+        .resource-icon.active {
+            animation: pulse 2s infinite;
+            background: rgba(0, 212, 255, 0.2);
+        }
+
+        /* Центральная зона */
+        .main-zone {
+            background: var(--panel-bg);
+            border: 2px solid var(--neon-purple);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-zone::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 212, 255, 0.1), transparent 30%);
+            animation: rotate 10s linear infinite;
+            pointer-events: none;
+        }
+
+        .zone-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Карта */
+        .card-container {
+            perspective: 1000px;
+            margin: 20px 0;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(135deg, rgba(20, 21, 50, 0.95), rgba(30, 31, 70, 0.95));
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 25px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card.danger {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+        }
+
+        .card.choice {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .card.quest {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-type {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .card.danger .card-type { background: rgba(255, 51, 102, 0.2); color: var(--neon-red); }
+        .card.choice .card-type { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+        .card.quest .card-type { background: rgba(0, 255, 136, 0.2); color: var(--neon-green); }
+
+        .card-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Кнопки */
+        .btn {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, var(--neon-red), #ff6b6b);
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, var(--neon-green), #00cc6a);
+        }
+
+        /* Варианты ответа */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .choice-btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--neon-blue);
+            transform: translateX(5px);
+        }
+
+        .choice-btn.correct {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: var(--neon-green);
+        }
+
+        .choice-btn.wrong {
+            background: rgba(255, 51, 102, 0.2);
+            border-color: var(--neon-red);
+        }
+
+        /* Трек прогресса */
+        .progress-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .track-line {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .track-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .track-markers {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
+            top: -5px;
+        }
+
+        .marker {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .marker.active {
+            background: var(--neon-green);
+            border-color: white;
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        .marker.current {
+            animation: pulse 1s infinite;
+            background: var(--neon-blue);
+        }
+
+        /* Цифровой след */
+        .digital-trail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            min-height: 60px;
+        }
+
+        .trail-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            animation: fadeIn 0.5s;
+        }
+
+        .trail-good {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--neon-green);
+        }
+
+        .trail-bad {
+            background: rgba(255, 51, 102, 0.2);
+            border: 1px solid var(--neon-red);
+        }
+
+        /* Алгоритм подсказка */
+        .algorithm-hint {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .algorithm-hint.show {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+
+        .algorithm-steps {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px;
+            font-weight: bold;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1b3a, #0a0b1e);
+            border: 2px solid var(--neon-blue);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        /* Экран старта */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .logo-big {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .start-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .start-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* Анимации */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch {
+            animation: glitch 0.3s;
+        }
+
+        /* Эффекты частиц */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            animation: particle-float 3s linear infinite;
+        }
+
+        @keyframes particle-float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Лог игры */
+        .game-log {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-positive { color: var(--neon-green); }
+        .log-negative { color: var(--neon-red); }
+        .log-neutral { color: var(--neon-blue); }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="cyber-grid"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Экран старта -->
+    <div class="start-screen" id="startScreen">
+        <div class="logo-big">🛡️⚔️</div>
+        <h1 class="start-title">ЦИФРОВЫЕ РЫЦАРИ</h1>
+        <p class="start-subtitle">
+            Защитники Сети<br><br>
+            Пройди путь от Новичка до Легенды, защищая свою приватность 
+            и распространяя доброту в цифровом мире.
+            <br><br>
+            <strong>Цель:</strong> Набери 50 очков репутации, не оставив грязного следа!
+        </p>
+        <button class="btn" onclick="startGame()">Начать игру</button>
+        <button class="btn btn-secondary" onclick="showRules()">Правила</button>
+    </div>
+
+    <!-- Модальное окно правил -->
+    <div class="modal" id="rulesModal">
+        <div class="modal-content">
+            <div class="modal-icon">📜</div>
+            <h2 class="modal-title">Как играть</h2>
+            <p style="text-align: left; line-height: 1.8; margin-bottom: 20px;">
+                <strong>🎮 Механика:</strong><br>
+                • Тяни карты и разбирай ситуации<br>
+                • Применяй алгоритм «Стоп-Блок-Сообщи»<br>
+                • Набирай очки репутации<br><br>
+
+                <strong>🃏 Типы карт:</strong><br>
+                🔴 <span style="color: #ff3366">Опасность</span> — используй алгоритм<br>
+                🟡 <span style="color: #ffd700">Выбор</span> — прими решение<br>
+                🟢 <span style="color: #00ff88">Квест</span> — получи награду<br><br>
+
+                <strong>⚠️ Внимание:</strong><br>
+                Твой Цифровой След виден всем!<br>
+                3 плохих поступка = откат назад.
+            </p>
+            <button class="btn" onclick="closeRules()">Понятно!</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно победы -->
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <div class="modal-icon">👑</div>
+            <h2 class="modal-title">ЦИФРОВОЙ РЫЦАРЬ!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">
+                Поздравляем! Ты достиг 50 очков репутации!<br>
+                Ты настоящий защитник сети и пример для других.
+            </p>
+            <div id="finalStats"></div>
+            <button class="btn" onclick="restartGame()">Играть снова</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно поражения -->
+    <div class="modal" id="loseModal">
+        <div class="modal-content">
+            <div class="modal-icon">💀</div>
+            <h2 class="modal-title" style="color: #ff3366">ЦИФРОВОЙ СЛЕД ЗАГРЯЗНЁН</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">
+                Твои действия в сети привели к потере репутации.<br>
+                Но всё можно исправить! Попробуй снова.
+            </p>
+            <button class="btn" onclick="restartGame()">Попробовать снова</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>ЦИФРОВЫЕ РЫЦАРИ</h1>
+            <p class="subtitle">ЗАЩИТНИКИ СЕТИ</p>
+        </header>
+
+        <!-- Трек прогресса -->
+        <div class="progress-track">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>🌱 Новичок</span>
+                <span>🛡️ Защитник</span>
+                <span>⚔️ Ветеран</span>
+                <span>👑 Легенда</span>
+            </div>
+            <div class="track-line">
+                <div class="track-progress" id="trackProgress" style="width: 20%"></div>
+                <div class="track-markers">
+                    <div class="marker active" data-pos="0"></div>
+                    <div class="marker" data-pos="25"></div>
+                    <div class="marker" data-pos="50"></div>
+                    <div class="marker" data-pos="75"></div>
+                    <div class="marker" data-pos="100"></div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 10px; font-family: 'Orbitron', monospace;">
+                Прогресс: <span id="progressText">10/50</span> очков
+            </div>
+        </div>
+
+        <div class="game-board">
+            <!-- Левая панель: Статистика -->
+            <div class="side-panel">
+                <h3 class="panel-title">⚡ СТАТИСТИКА</h3>
+
+                <div class="stat-item">
+                    <span>🏆 Репутация</span>
+                    <span class="stat-value" id="reputation">10</span>
+                </div>
+
+                <div class="stat-item">
+                    <span>🎯 Ходов</span>
+                    <span class="stat-value" id="moves">0</span>
+                </div>
+
+                <div class="stat-item">
+                    <span>✅ Правильно</span>
+                    <span class="stat-value" id="correct">0</span>
+                </div>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <h4 style="color: var(--neon-blue); margin-bottom: 10px;">Ресурсы</h4>
+                    <div class="resources">
+                        <div class="resource-icon shield" id="shieldIcon" title="Щит Приватности">
+                            🛡️
+                        </div>
+                        <div class="resource-icon sword" id="swordIcon" title="Меч Доброты">
+                            ⚔️
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                        Щитов: <span id="shieldCount">0</span> | Мечей: <span id="swordCount">0</span>
+                    </div>
+                </div>
+
+                <div class="game-log" id="gameLog">
+                    <div class="log-entry log-neutral">Игра началась. Удачи!</div>
+                </div>
+            </div>
+
+            <!-- Центральная зона: Карты -->
+            <div class="main-zone">
+                <div class="zone-content">
+                    <div id="gameArea">
+                        <div class="card-container">
+                            <div class="card" id="currentCard" style="display: none;">
+                                <div class="card-type" id="cardType">ТИП КАРТЫ</div>
+                                <div class="card-icon" id="cardIcon">🎮</div>
+                                <div class="card-text" id="cardText">
+                                    Текст ситуации появится здесь...
+                                </div>
+                                <div class="choices" id="choicesArea">
+                                    <!-- Варианты ответов -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="startArea">
+                            <div style="font-size: 4rem; margin-bottom: 20px;">🎲</div>
+                            <h3 style="margin-bottom: 20px; color: var(--neon-blue);">Готов к приключению?</h3>
+                            <p style="margin-bottom: 30px; opacity: 0.8;">Тяни карту, чтобы начать свой путь цифрового рыцаря!</p>
+                            <button class="btn" onclick="drawCard()" id="drawBtn">Тянуть карту</button>
+                        </div>
+
+                        <div id="resultArea" style="display: none;">
+                            <div id="resultIcon" style="font-size: 3rem; margin-bottom: 15px;"></div>
+                            <h3 id="resultTitle" style="margin-bottom: 15px;"></h3>
+                            <p id="resultText" style="margin-bottom: 20px; line-height: 1.6;"></p>
+                            <button class="btn" onclick="nextTurn()">Продолжить</button>
+                        </div>
+                    </div>
+
+                    <!-- Подсказка алгоритма -->
+                    <div class="algorithm-hint" id="algorithmHint">
+                        <h4 style="color: var(--neon-blue); margin-bottom: 10px;">🔍 Алгоритм «Стоп-Блок-Сообщи»</h4>
+                        <div class="algorithm-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div>🛑 Стоп</div>
+                                <small>Не отвечай агрессией</small>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div>🚫 Блок</div>
+                                <small>Заблокируй обидчика</small>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div>📢 Сообщи</div>
+                                <small>Расскажи взрослому</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая панель: Цифровой след -->
+            <div class="side-panel">
+                <h3 class="panel-title">👣 ЦИФРОВОЙ СЛЕД</h3>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 15px; text-align: center;">
+                    Интернет помнит всё...
+                </p>
+                <div class="digital-trail" id="digitalTrail">
+                    <!-- Здесь появляются карточки следа -->
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 51, 102, 0.1); border-radius: 10px; border: 1px solid rgba(255, 51, 102, 0.3);">
+                    <h4 style="color: var(--neon-red); margin-bottom: 10px;">⚠️ Опасность</h4>
+                    <p style="font-size: 0.9rem; line-height: 1.5;">
+                        Если наберёшь 3 плохих поступка (<span style="color: var(--neon-red)">😔</span>), 
+                        потеряешь 10 очков репутации!
+                    </p>
+                    <div style="margin-top: 10px; text-align: center; font-size: 1.5rem;">
+                        <span id="badCount">0</span>/3 😔
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Игровые данные
+        const gameData = {
+            reputation: 10,
+            moves: 0,
+            correct: 0,
+            shields: 0,
+            swords: 0,
+            trail: [],
+            badActions: 0,
+            currentCard: null,
+            gameOver: false
+        };
+
+        // Карты ситуаций
+        const cards = [
+            // ОПАСНОСТЬ (красные)
+            {
+                type: 'danger',
+                icon: '🔴',
+                title: 'ОПАСНОСТЬ',
+                text: 'В чате игры Roblox незнакомец просит твой номер телефона, чтобы "подарить редкий скин". Что делать?',
+                choices: [
+                    { text: 'Дать номер — скин же редкий!', correct: false, points: -3, trail: 'bad' },
+                    { text: 'Игнорировать и заблокировать', correct: true, points: 5, trail: 'good', reward: 'shield' },
+                    { text: 'Послать его и оскорбить', correct: false, points: -2, trail: 'bad' }
+                ],
+                hint: true
+            },
+            {
+                type: 'danger',
+                icon: '🔴',
+                title: 'ОПАСНОСТЬ',
+                text: 'Ты нашёл пароль от аккаунта одноклассника в школьном чате. Друзья предлагают зайти и "пошутить".',
+                choices: [
+                    { text: 'Зайти и написать глупость от его имени', correct: false, points: -5, trail: 'bad' },
+                    { text: 'Сообщить однокласснику и админу чата', correct: true, points: 5, trail: 'good', reward: 'sword' },
+                    { text: 'Ничего не делать, но сохранить пароль', correct: false, points: -2, trail: 'bad' }
+                ],
+                hint: true
+            },
+            {
+                type: 'danger',
+                icon: '🔴',
+                title: 'ОПАСНОСТЬ',
+                text: 'Под твоим видео в TikTok появились грубые комментарии и оскорбления. Ты злишься и хочешь ответить.',
+                choices: [
+                    { text: 'Ответить тем же — пусть знает, каково это!', correct: false, points: -3, trail: 'bad' },
+                    { text: 'Удалить комментарии и пожаловаться', correct: true, points: 5, trail: 'good', reward: 'shield' },
+                    { text: 'Закрыть комментарии и забыть', correct: true, points: 3, trail: 'good' }
+                ],
+                hint: true
+            },
+            {
+                type: 'danger',
+                icon: '🔴',
+                title: 'ОПАСНОСТЬ',
+                text: 'Друг слил твою личную переписку в общий классный чат. Все смеются и обсуждают.',
+                choices: [
+                    { text: 'Мстить — слить его переписку тоже!', correct: false, points: -5, trail: 'bad' },
+                    { text: 'Поговорить с другом и учителем', correct: true, points: 5, trail: 'good', reward: 'sword' },
+                    { text: 'Удалиться из всех соцсетей', correct: false, points: -1, trail: 'bad' }
+                ],
+                hint: true
+            },
+            {
+                type: 'danger',
+                icon: '🔴',
+                title: 'ОПАСНОСТЬ',
+                text: 'В Minecraft игрок начал гриферить твой дом и оскорблять тебя в чате.',
+                choices: [
+                    { text: 'Начать гриферить его в отместку', correct: false, points: -3, trail: 'bad' },
+                    { text: 'Заблокировать и сообщить модератору', correct: true, points: 5, trail: 'good', reward: 'shield' },
+                    { text: 'Выйти из игры и пожаловаться админу', correct: true, points: 4, trail: 'good' }
+                ],
+                hint: true
+            },
+            // ВЫБОР (жёлтые)
+            {
+                type: 'choice',
+                icon: '🟡',
+                title: 'ВЫБОР',
+                text: 'Ты сделал забавный скриншот, где одноклассник споткнулся. Выложить в сторис?',
+                choices: [
+                    { text: 'Да, всем будет смешно!', correct: false, points: -2, trail: 'bad' },
+                    { text: 'Нет, спрошу разрешения друга', correct: true, points: 4, trail: 'good' },
+                    { text: 'Отправлю только близким друзьям', correct: false, points: 0, trail: 'neutral' }
+                ],
+                hint: false
+            },
+            {
+                type: 'choice',
+                icon: '🟡',
+                title: 'ВЫБОР',
+                text: 'Тебе предлагают купить "читерскую" программу для побед в играх.',
+                choices: [
+                    { text: 'Купить — хочу быть лучшим!', correct: false, points: -4, trail: 'bad' },
+                    { text: 'Отказаться — это нечестно', correct: true, points: 4, trail: 'good', reward: 'sword' },
+                    { text: 'Подумать, но пока не решать', correct: false, points: 0, trail: 'neutral' }
+                ],
+                hint: false
+            },
+            {
+                type: 'choice',
+                icon: '🟡',
+                title: 'ВЫБОР',
+                text: 'Твой друг постит много личной информации (адрес, школа, расписание).',
+                choices: [
+                    { text: 'Ничего страшного, пусть постит', correct: false, points: -1, trail: 'bad' },
+                    { text: 'Предупредить о рисках', correct: true, points: 4, trail: 'good', reward: 'shield' },
+                    { text: 'Проигнорировать — не моё дело', correct: false, points: 0, trail: 'neutral' }
+                ],
+                hint: false
+            },
+            {
+                type: 'choice',
+                icon: '🟡',
+                title: 'ВЫБОР',
+                text: 'В классном чате обсуждают учителя неуважительно. Тебя добавляют в обсуждение.',
+                choices: [
+                    { text: 'Присоединиться — все так делают', correct: false, points: -3, trail: 'bad' },
+                    { text: 'Не участвовать и сказать, что это неправильно', correct: true, points: 5, trail: 'good', reward: 'sword' },
+                    { text: 'Молча выйти из чата', correct: true, points: 2, trail: 'good' }
+                ],
+                hint: false
+            },
+            {
+                type: 'choice',
+                icon: '🟡',
+                title: 'ВЫБОР',
+                text: 'Ты нашёл старый пост, где 2 года назад обижал одноклассника. Сейчас он популярен.',
+                choices: [
+                    { text: 'Удалить и сделать вид, что не было', correct: false, points: -2, trail: 'bad' },
+                    { text: 'Извиниться лично и удалить пост', correct: true, points: 5, trail: 'good', reward: 'sword' },
+                    { text: 'Оставить — это было давно', correct: false, points: -1, trail: 'bad' }
+                ],
+                hint: false
+            },
+            // КВЕСТ (зелёные)
+            {
+                type: 'quest',
+                icon: '🟢',
+                title: 'КВЕСТ ДОБРОТЫ',
+                text: 'Новичок в игре просит помощи разобраться. У тебя есть 10 минут.',
+                choices: [
+                    { text: 'Помочь и научить основам', correct: true, points: 5, trail: 'good', reward: 'sword' },
+                    { text: 'Послать учить самого', correct: false, points: -2, trail: 'bad' },
+                    { text: 'Игнорировать — мне некогда', correct: false, points: 0, trail: 'neutral' }
+                ],
+                hint: false
+            },
+            {
+                type: 'quest',
+                icon: '🟢',
+                title: 'КВЕСТ ДОБРОТЫ',
+                text: 'Ты заметил, что друг выглядит расстроенным после переписки.',
+                choices: [
+                    { text: 'Спросить, всё ли в порядке', correct: true, points: 5, trail: 'good', reward: 'sword' },
+                    { text: 'Не лезть в чужие дела', correct: false, points: 0, trail: 'neutral' },
+                    { text: 'Рассказать всем, что он грустит', correct: false, points: -3, trail: 'bad' }
+                ],
+                hint: false
+            },
+            {
+                type: 'quest',
+                icon: '🟢',
+                title: 'КВЕСТ ДОБРОТЫ',
+                text: 'Ты можешь создать пост о цифровой безопасности для класса.',
+                choices: [
+                    { text: 'Создать полезный контент', correct: true, points: 5, trail: 'good', reward: 'shield' },
+                    { text: 'Слишком сложно, не буду', correct: false, points: 0, trail: 'neutral' },
+                    { text: 'Сделать шуточный пост про "параноиков"', correct: false, points: -2, trail: 'bad' }
+                ],
+                hint: false
+            },
+            {
+                type: 'quest',
+                icon: '🟢',
+                title: 'КВЕСТ ДОБРОТЫ',
+                text: 'Одноклассник получил много хейта за пост. Ты можешь поддержать.',
+                choices: [
+                    { text: 'Написать добрый комментарий', correct: true, points: 5, trail: 'good', reward: 'sword' },
+                    { text: 'Поставить лайк, но не писать', correct: true, points: 3, trail: 'good' },
+                    { text: 'Ничего не делать — не хочу рисковать', correct: false, points: 0, trail: 'neutral' }
+                ],
+                hint: false
+            },
+            {
+                type: 'quest',
+                icon: '🟢',
+                title: 'КВЕСТ ДОБРОТЫ',
+                text: 'Твоя бабушка просит научить пользоваться безопасными настройками в соцсетях.',
+                choices: [
+                    { text: 'Уделить время и объяснить', correct: true, points: 5, trail: 'good', reward: 'shield' },
+                    { text: 'Сказать, что это слишком сложно для неё', correct: false, points: -2, trail: 'bad' },
+                    { text: 'Посоветовать спросить у родителей', correct: false, points: 1, trail: 'neutral' }
+                ],
+                hint: false
+            }
+        ];
+
+        // Инициализация игры
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            createParticles();
+            updateUI();
+        }
+
+        function showRules() {
+            document.getElementById('rulesModal').classList.add('show');
+        }
+
+        function closeRules() {
+            document.getElementById('rulesModal').classList.remove('show');
+        }
+
+        // Создание частиц
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.background = ['#00d4ff', '#b347d9', '#00ff88'][Math.floor(Math.random() * 3)];
+                container.appendChild(particle);
+            }
+        }
+
+        // Тянуть карту
+        function drawCard() {
+            if (gameData.gameOver) return;
+
+            // Скрыть стартовую зону
+            document.getElementById('startArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+
+            // Выбрать случайную карту
+            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+            gameData.currentCard = randomCard;
+
+            // Отобразить карту
+            const cardEl = document.getElementById('currentCard');
+            cardEl.className = 'card ' + randomCard.type;
+            cardEl.style.display = 'block';
+
+            document.getElementById('cardType').textContent = randomCard.title;
+            document.getElementById('cardIcon').textContent = randomCard.icon;
+            document.getElementById('cardText').textContent = randomCard.text;
+
+            // Показать подсказку алгоритма для опасностей
+            const hintEl = document.getElementById('algorithmHint');
+            if (randomCard.hint) {
+                hintEl.classList.add('show');
+            } else {
+                hintEl.classList.remove('show');
+            }
+
+            // Создать кнопки выбора
+            const choicesEl = document.getElementById('choicesArea');
+            choicesEl.innerHTML = '';
+
+            randomCard.choices.forEach((choice, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = choice.text;
+                btn.onclick = () => makeChoice(index);
+                choicesEl.appendChild(btn);
+            });
+
+            // Анимация появления
+            cardEl.style.animation = 'fadeIn 0.5s';
+
+            gameData.moves++;
+            updateUI();
+        }
+
+        // Сделать выбор
+        function makeChoice(choiceIndex) {
+            const card = gameData.currentCard;
+            const choice = card.choices[choiceIndex];
+
+            // Отключить все кнопки
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Подсветить результат
+            const buttons = document.querySelectorAll('.choice-btn');
+            buttons[choiceIndex].classList.add(choice.correct ? 'correct' : 'wrong');
+
+            // Применить эффекты
+            setTimeout(() => {
+                applyChoiceEffects(choice);
+            }, 1000);
+        }
+
+        // Применить эффекты выбора
+        function applyChoiceEffects(choice) {
+            // Обновить репутацию
+            gameData.reputation += choice.points;
+
+            // Добавить в след
+            if (choice.trail !== 'neutral') {
+                addToTrail(choice.trail);
+            }
+
+            // Награды
+            if (choice.reward === 'shield') {
+                gameData.shields++;
+                showNotification('🛡️ Получен Щит Приватности!', 'success');
+            }
+            if (choice.reward === 'sword') {
+                gameData.swords++;
+                showNotification('⚔️ Получен Меч Доброты!', 'success');
+            }
+
+            // Подсчёт правильных
+            if (choice.correct) {
+                gameData.correct++;
+            }
+
+            // Проверка плохих действий
+            if (gameData.badActions >= 3) {
+                gameData.reputation -= 10;
+                gameData.badActions = 0;
+                showNotification('💀 Слишком много плохих поступков! -10 репутации', 'error');
+                document.getElementById('digitalTrail').innerHTML = '';
+            }
+
+            // Проверка победы/поражения
+            if (gameData.reputation >= 50) {
+                endGame(true);
+                return;
+            }
+            if (gameData.reputation <= 0) {
+                endGame(false);
+                return;
+            }
+
+            // Показать результат
+            showResult(choice);
+            updateUI();
+        }
+
+        // Показать результат
+        function showResult(choice) {
+            document.getElementById('currentCard').style.display = 'none';
+            document.getElementById('algorithmHint').classList.remove('show');
+
+            const resultArea = document.getElementById('resultArea');
+            resultArea.style.display = 'block';
+
+            const icon = choice.correct ? '✅' : (choice.points < 0 ? '❌' : '⚠️');
+            const title = choice.correct ? 'Отличный выбор!' : (choice.points < 0 ? 'Ошибка...' : 'Нейтрально');
+            const text = choice.correct 
+                ? `Ты заработал ${choice.points} очков репутации! ${choice.reward ? 'Получена награда!' : ''}`
+                : `Ты потерял ${Math.abs(choice.points)} очков. ${choice.trail === 'bad' ? 'Это останется в твоём следе...' : ''}`;
+
+            document.getElementById('resultIcon').textContent = icon;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultText').textContent = text;
+
+            // Добавить в лог
+            addToLog(choice.correct ? `Правильный выбор: +${choice.points} репутации` : `Ошибка: ${choice.points} репутации`, choice.correct ? 'positive' : 'negative');
+        }
+
+        // Следующий ход
+        function nextTurn() {
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('startArea').style.display = 'block';
+        }
+
+        // Добавить в след
+        function addToTrail(type) {
+            const trail = document.getElementById('digitalTrail');
+            const item = document.createElement('div');
+            item.className = 'trail-item trail-' + type;
+            item.textContent = type === 'good' ? '😊' : (type === 'bad' ? '😔' : '😐');
+            trail.appendChild(item);
+
+            if (type === 'bad') {
+                gameData.badActions++;
+            }
+
+            // Ограничить количество
+            while (trail.children.length > 6) {
+                trail.removeChild(trail.firstChild);
+            }
+        }
+
+        // Обновить UI
+        function updateUI() {
+            document.getElementById('reputation').textContent = gameData.reputation;
+            document.getElementById('moves').textContent = gameData.moves;
+            document.getElementById('correct').textContent = gameData.correct;
+            document.getElementById('shieldCount').textContent = gameData.shields;
+            document.getElementById('swordCount').textContent = gameData.swords;
+            document.getElementById('badCount').textContent = gameData.badActions;
+
+            // Обновить прогресс
+            const progress = Math.min((gameData.reputation / 50) * 100, 100);
+            document.getElementById('trackProgress').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${gameData.reputation}/50`;
+
+            // Обновить маркеры
+            document.querySelectorAll('.marker').forEach((marker, index) => {
+                marker.classList.remove('active', 'current');
+                const pos = parseInt(marker.dataset.pos);
+                if (progress >= pos) {
+                    marker.classList.add('active');
+                }
+                if (index === Math.floor(progress / 25)) {
+                    marker.classList.add('current');
+                }
+            });
+
+            // Анимация ресурсов
+            if (gameData.shields > 0) {
+                document.getElementById('shieldIcon').classList.add('active');
+            }
+            if (gameData.swords > 0) {
+                document.getElementById('swordIcon').classList.add('active');
+            }
+        }
+
+        // Добавить в лог
+        function addToLog(message, type) {
+            const log = document.getElementById('gameLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `Ход ${gameData.moves}: ${message}`;
+            log.insertBefore(entry, log.firstChild);
+
+            while (log.children.length > 10) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        // Уведомление
+        function showNotification(text, type) {
+            // Можно добавить toast-уведомления здесь
+            console.log(text);
+        }
+
+        // Конец игры
+        function endGame(victory) {
+            gameData.gameOver = true;
+
+            if (victory) {
+                document.getElementById('finalStats').innerHTML = `
+                    <p>Ходов: ${gameData.moves}</p>
+                    <p>Правильных решений: ${gameData.correct}</p>
+                    <p>Щитов: ${gameData.shields} | Мечей: ${gameData.swords}</p>
+                `;
+                document.getElementById('winModal').classList.add('show');
+            } else {
+                document.getElementById('loseModal').classList.add('show');
+            }
+        }
+
+        // Рестарт
+        function restartGame() {
+            gameData.reputation = 10;
+            gameData.moves = 0;
+            gameData.correct = 0;
+            gameData.shields = 0;
+            gameData.swords = 0;
+            gameData.trail = [];
+            gameData.badActions = 0;
+            gameData.gameOver = false;
+
+            document.getElementById('digitalTrail').innerHTML = '';
+            document.getElementById('gameLog').innerHTML = '<div class="log-entry log-neutral">Игра началась. Удачи!</div>';
+            document.getElementById('winModal').classList.remove('show');
+            document.getElementById('loseModal').classList.remove('show');
+
+            document.getElementById('currentCard').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('startArea').style.display = 'block';
+            document.getElementById('algorithmHint').classList.remove('show');
+
+            updateUI();
+        }
+
+        // Инициализация
+        updateUI();
+    </script>
+</body>
+</html>
